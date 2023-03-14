@@ -44,9 +44,17 @@ class DiscountApplyFromProperty
   end
   
   def run()
-
-    PRODUCT_DISCOUNT = @item.properties.fetch(@campaign[:property_name]).sub(@campaign[:property_value_prefix]).to_f
-    ApplyProductDiscount.new(@item,PRODUCT_DISCOUNT,@campaign)
+    
+    PRODUCT_DISCOUNT = nil
+    @item.properties.each do |key,value|
+      if key == @campaign[:property_name]
+        PRODUCT_DISCOUNT = value.sub(@campaign[:property_value_prefix],"").to_f
+        break
+      end
+    end
+    if(PRODUCT_DISCOUNT != nil)
+      ApplyProductDiscount.new(@item,PRODUCT_DISCOUNT,@campaign)
+    end
     
   end
 end
@@ -61,8 +69,8 @@ class ApplyDifferentDiscountEachProduuct
     cart.line_items.each do |line_item|
       @campaigns.each do |campaign|
         
-        if(campaign[:property_prefix] != "" && campaign[:property_prefix] != nil)
           DiscountApplyFromProperty.new(line_item,campaign)
+        if(campaign[:property_prefix] != "" && campaign[:property_prefix] != nil)
         end
 
       end
